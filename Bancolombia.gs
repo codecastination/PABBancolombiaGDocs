@@ -3,42 +3,118 @@
 function CreatePaymentFile() {  
   var activeSheet =  SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
  
-  // This represents ALL the data
-  var range = activeSheet.getRange("A10:D100");
-  var values = range.getValues();
+  // Payroll Data
+  var payrollData = activeSheet.getRange("A10:D100").getValues();
+  
+  // 3rd Party Data
+  var DB3rd = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("TERCEROS").getRange("A2:E100").getValues();
+  // 3rd Party Data
+  var DBBanks = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("BANCOS").getRange("A2:B100").getValues();
+  // 3rd Party Data
+  var DBAccType = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("TIPO CUENTA").getRange("A2:E100").getValues();  
   
   var fileBancolombia = "";
   
-  for (var i = 0; i < values.length; i++) {
+  for (var i = 0; i < payrollData.length; i++) {
     //Valor fijo 6 Indica el tipo de registro de detalle
     var bancolombiaLine = "6";
-    for (var j = 0; j < values[i].length; j++) {
-      // Get Bank Account Number, Bank, Account Type & Account Name
-      if (j==0)
-      {
-        
-      }
-      // Get Reference
-      if (j==1)
-      {
-        
-      }      
-      // Get Amount
-      if (j==2)
-      {
-        
-      }       
-      // Get Date
-      if (j==3)
-      {
-        
-      }         
-    }
-    fileBancolombia = fileBancolombia + "\r\n";
+    var accountName = payrollData[i][0];
+    var amount = payrollData[i][1];
+    var txnDate = payrollData[i][2];
+    var reference = payrollData[i][3];
+    // Get Bank Account Number, Bank, Account Type & Account Name
+    bancolombiaLine += GetDocument(DB3rd, accountName);
+    bancolombiaLine += GetBankAccountName(accountName);
+    bancolombiaLine += GetBankAccount(DB3rd, DBBanks, DBAccType, accountName); 
+    // Get Amount
+    bancolombiaLine += GetAmount(amount);     
+    // Get Date
+    bancolombiaLine += GetTxnDate(txnDate);   
+    // Get Reference
+    bancolombiaLine += GetReference(reference);  
+      
+    fileBancolombia += bancolombiaLine + "\r\n";
   }  
   
-  // Control Line    
+  // Folder 
+  var folders = DriveApp.getFoldersByName("PagosBancolombia");
+  var bancolombiaFolder = null;
+  while(folders.hasNext()){
+    var folderFound = folders.next();
+    if(folderFound.getName() == "PagosBancolombia"){
+      bancolombiaFolder = folderFound
+    }
+  }
+  if (bancolombiaFolder == null){
+    bancolombiaFolder = DriveApp.createFolder("PagosBancolombia");
+  }
+  var tempFile = bancolombiaFolder.createFile("Bancolombia_" + activeSheet.getName() + ".txt", fileBancolombia, "text/plain");
+}
 
-  var paymentFolder = DriveApp.createFolder("PagosBancolombia");
-  var tempFile = paymentFolder.createFile("Bancolombia_" + activeSheet.getName() + ".txt", fileBancolombia, "text/plain");
+function GetBankAccount(DB3rd, DBBanks, DBAccType, accountName)
+{
+  var accountRow;
+  var accountBankRow;
+  var accountTypeRow;
+  // find account row
+  for (var i = 0; i < DB3rd.length; i++) {
+    var entryValue = DB3rd[i][1]; 
+    if (entryValue == accountName){
+      accountRow = DB3rd[i];
+    }
+  }
+  // find account bank
+  for (var i = 0; i < DBBanks.length; i++) {
+    var entryValue = DBBanks[i][0]; 
+    if (entryValue == accountRow[2]){
+      accountBankRow = DBBanks[i];
+    }
+  }  
+  // find account type
+  for (var i = 0; i < DBAccType.length; i++) {
+    var entryValue = DBAccType[i][0]; 
+    if (entryValue == accountRow[3]){
+      accountTypeRow = DBAccType[i];
+    }
+  }   
+  
+  return accountBankRow[1] + accountRow[4] + accountTypeRow[1];
+}
+
+function GetBankAccountName(accountName){
+  return accountName;
+}
+
+function GetDocument(DB, accountName)
+{
+  for (var i = 0; i < DB.length; i++) {
+    var entryValue = DB[i][1]; 
+    if (entryValue == accountName){
+      return DB[i][0];
+    }
+  }
+}
+  
+function GetAmount(amount)
+{
+  return amount;
+}  
+
+function GetTxnDate(txnDate)
+{
+  txnDate = new Date(txnDate);
+  var pad = "00";
+  // year
+  var retDate = txnDate.getFullYear();
+  // month
+  retDate += ("00" + (txnDate.getMonth()+1)).slice(-2);
+  // day
+  retDate += ("00" + txnDate.getDate()).slice(-2);
+  
+  return retDate;
+}
+
+function GetReference(reference)
+{
+  return reference;
 }

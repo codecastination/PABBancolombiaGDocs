@@ -24,7 +24,7 @@ function CreatePaymentFile() {
     var reference = payrollData[i][3];
     if (accountName.length > 0){
       // Get Bank Account Number, Bank, Account Type & Account Name
-      bancolombiaLine += padRight(GetDocument(DB3rd, accountName)," ", 16);
+      bancolombiaLine += GetDocumentNumber(DB3rd, accountName);
       bancolombiaLine += GetBankAccountName(accountName);
       bancolombiaLine += GetBankAccount(DB3rd, DBBanks, DBAccType, accountName); 
       // Get Amount
@@ -33,6 +33,8 @@ function CreatePaymentFile() {
       bancolombiaLine += GetTxnDate(txnDate);   
       // Get Reference
       bancolombiaLine += GetReference(reference);  
+      // Get Final Part
+      bancolombiaLine += GetFinalPart();
       
       fileBancolombia += bancolombiaLine + "\r\n";
     }
@@ -53,12 +55,16 @@ function CreatePaymentFile() {
   var tempFile = bancolombiaFolder.createFile("Bancolombia_" + activeSheet.getName() + ".txt", fileBancolombia, "text/plain");
 }
 
-function GetDocument(DB, accountName)
+function GetFinalPart(){
+  return "000000                                                                                                                                         ";
+}
+
+function GetDocumentNumber(DB, accountName)
 {
   for (var i = 0; i < DB.length; i++) {
     var entryValue = DB[i][1]; 
     if (entryValue == accountName){
-      return DB[i][0];
+      return padRight(DB[i][0].toString(), " ", 15);
     }
   }
 }
@@ -89,8 +95,8 @@ function GetBankAccount(DB3rd, DBBanks, DBAccType, accountName)
       accountTypeRow = DBAccType[i];
     }
   }   
-  
-  return accountBankRow[1] + accountRow[4] + accountTypeRow[1];
+  //     Account Id                   + Account Number                              + Account Type
+  return accountBankRow[1].toString() + padRight(accountRow[4].toString(), " ", 17) + accountTypeRow[1].toString();
 }
 
 function GetBankAccountName(accountName){
@@ -119,7 +125,7 @@ function GetTxnDate(txnDate)
 
 function GetReference(reference)
 {
-  return reference;
+  return padRight(reference, " ", 21);
 }
 
 function padRight(s, c, n) {

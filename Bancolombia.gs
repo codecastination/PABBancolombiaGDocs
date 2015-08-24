@@ -22,18 +22,20 @@ function CreatePaymentFile() {
     var amount = payrollData[i][1];
     var txnDate = payrollData[i][2];
     var reference = payrollData[i][3];
-    // Get Bank Account Number, Bank, Account Type & Account Name
-    bancolombiaLine += GetDocument(DB3rd, accountName);
-    bancolombiaLine += GetBankAccountName(accountName);
-    bancolombiaLine += GetBankAccount(DB3rd, DBBanks, DBAccType, accountName); 
-    // Get Amount
-    bancolombiaLine += GetAmount(amount);     
-    // Get Date
-    bancolombiaLine += GetTxnDate(txnDate);   
-    // Get Reference
-    bancolombiaLine += GetReference(reference);  
+    if (accountName.length > 0){
+      // Get Bank Account Number, Bank, Account Type & Account Name
+      bancolombiaLine += padRight(GetDocument(DB3rd, accountName)," ", 16);
+      bancolombiaLine += GetBankAccountName(accountName);
+      bancolombiaLine += GetBankAccount(DB3rd, DBBanks, DBAccType, accountName); 
+      // Get Amount
+      bancolombiaLine += GetAmount(amount);     
+      // Get Date
+      bancolombiaLine += GetTxnDate(txnDate);   
+      // Get Reference
+      bancolombiaLine += GetReference(reference);  
       
-    fileBancolombia += bancolombiaLine + "\r\n";
+      fileBancolombia += bancolombiaLine + "\r\n";
+    }
   }  
   
   // Folder 
@@ -42,13 +44,23 @@ function CreatePaymentFile() {
   while(folders.hasNext()){
     var folderFound = folders.next();
     if(folderFound.getName() == "PagosBancolombia"){
-      bancolombiaFolder = folderFound
+      bancolombiaFolder = folderFound;
     }
   }
   if (bancolombiaFolder == null){
     bancolombiaFolder = DriveApp.createFolder("PagosBancolombia");
   }
   var tempFile = bancolombiaFolder.createFile("Bancolombia_" + activeSheet.getName() + ".txt", fileBancolombia, "text/plain");
+}
+
+function GetDocument(DB, accountName)
+{
+  for (var i = 0; i < DB.length; i++) {
+    var entryValue = DB[i][1]; 
+    if (entryValue == accountName){
+      return DB[i][0];
+    }
+  }
 }
 
 function GetBankAccount(DB3rd, DBBanks, DBAccType, accountName)
@@ -82,22 +94,13 @@ function GetBankAccount(DB3rd, DBBanks, DBAccType, accountName)
 }
 
 function GetBankAccountName(accountName){
-  return accountName;
-}
-
-function GetDocument(DB, accountName)
-{
-  for (var i = 0; i < DB.length; i++) {
-    var entryValue = DB[i][1]; 
-    if (entryValue == accountName){
-      return DB[i][0];
-    }
-  }
+  return padRight(accountName, " ", 30);
 }
   
 function GetAmount(amount)
 {
-  return amount;
+  var amt = Number(amount).toFixed(2).toString().replace(".","").replace(",","");
+  return ("00000000000000000" + amt).slice(-17);
 }  
 
 function GetTxnDate(txnDate)
@@ -117,4 +120,15 @@ function GetTxnDate(txnDate)
 function GetReference(reference)
 {
   return reference;
+}
+
+function padRight(s, c, n) {
+  if (! s || ! c || s.length >= n) {
+    return s;
+  }
+  var max = (n - s.length)/c.length;
+  for (var i = 0; i < max; i++) {
+    s += c;
+  }
+  return s;
 }

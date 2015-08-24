@@ -1,3 +1,5 @@
+// REF: http://www.grupobancolombia.com/contenidoCentralizado/corporativo/formatospdf/SVE/FormatoPagosPAB.pdf
+
 function CreatePaymentFile() {  
   var activeSheet =  SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
  
@@ -8,17 +10,35 @@ function CreatePaymentFile() {
   var fileBancolombia = "";
   
   for (var i = 0; i < values.length; i++) {
+    //Valor fijo 6 Indica el tipo de registro de detalle
+    var bancolombiaLine = "6";
     for (var j = 0; j < values[i].length; j++) {
-      if (values[i][j]) {
-        fileBancolombia = fileBancolombia + "," + values[i][j];
+      // Get Bank Account Number, Bank, Account Type & Account Name
+      if (j==0)
+      {
+        
       }
-      fileBancolombia = fileBancolombia + "\r\n";
+      // Get Reference
+      if (j==1)
+      {
+        
+      }      
+      // Get Amount
+      if (j==2)
+      {
+        
+      }       
+      // Get Date
+      if (j==3)
+      {
+        
+      }         
     }
-    
+    fileBancolombia = fileBancolombia + "\r\n";
   }  
   
   // Control Line    
 
-    
-  var tempFile = DriveApp.createFile("Bancolombia_" + activeSheet.getName() + ".txt", fileBancolombia, "text/plain");
+  var paymentFolder = DriveApp.createFolder("PagosBancolombia");
+  var tempFile = paymentFolder.createFile("Bancolombia_" + activeSheet.getName() + ".txt", fileBancolombia, "text/plain");
 }

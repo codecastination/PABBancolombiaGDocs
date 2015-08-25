@@ -2,7 +2,7 @@
 
 function CreatePaymentFile() {  
   var activeSheet =  SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
- 
+   
   // Payroll Data
   var payrollData = activeSheet.getRange("A10:D100").getValues();
   
@@ -15,6 +15,43 @@ function CreatePaymentFile() {
   
   var fileBancolombia = "";
   
+  // ****************** Do Transaction Control Row ******************
+  
+  //Indica el tipo de registro de control del archivo
+  fileBancolombia += "1";
+  // NIT
+  fileBancolombia += ("000000000000000" + activeSheet.getRange("B2").getValue()).slice(-15);
+  // I=Inmediat M=Medio Dia N=Noche
+  fileBancolombia += "I";
+  // 15 Whitespaces
+  fileBancolombia += "               ";
+  // 225 = PAGO NOMINA
+  fileBancolombia += "225";
+  // Transaction description
+  fileBancolombia += padRight(activeSheet.getRange("B3").getValue().toString(), " ", 10);
+  // Transmission date
+  fileBancolombia += GetTxnDate(activeSheet.getRange("B4").getValue());
+  // Sequence
+  fileBancolombia += activeSheet.getRange("E2").getValue().toString();
+  // Transaction date
+  fileBancolombia += GetTxnDate(activeSheet.getRange("B5").getValue());
+  // Transaction count
+  fileBancolombia += ("000000" + activeSheet.getRange("E1").getValue().toString()).slice(-6);
+  // Debit total sum
+  fileBancolombia += "00000000000000000";
+  // Credit total sum
+  var total = Number(activeSheet.getRange("B7").getValue()).toFixed(2).toString().replace(".","").replace(",","");
+  fileBancolombia += ("00000000000000000" + total).slice(-17);
+  // Bank Account
+  fileBancolombia += ("00000000000" + activeSheet.getRange("E3").getValue().toString()).slice(-11);
+  // Bank Account Type
+  fileBancolombia += GetCompanyBankAccountType(activeSheet.getRange("E4").getValue(), DBAccType);
+  // Filler
+  for (var i = 0; i < 149; i++) { fileBancolombia += " "; }
+  
+  fileBancolombia += "\r\n";
+  
+  // ****************** Do Transactions rows ******************
   for (var i = 0; i < payrollData.length; i++) {
     //Valor fijo 6 Indica el tipo de registro de detalle
     var bancolombiaLine = "6";
@@ -40,6 +77,7 @@ function CreatePaymentFile() {
     }
   }  
   
+  // ****************** Save File ******************
   // Folder 
   var folders = DriveApp.getFoldersByName("PagosBancolombia");
   var bancolombiaFolder = null;
@@ -67,6 +105,16 @@ function GetDocumentNumber(DB, accountName)
       return padRight(DB[i][0].toString(), " ", 15);
     }
   }
+}
+
+function GetCompanyBankAccountType(accType, DBAccType){
+  // find account type
+  for (var i = 0; i < DBAccType.length; i++) {
+    var entryValue = DBAccType[i][0]; 
+    if (entryValue == accType){
+      return DBAccType[i][2]; 
+    }
+  } 
 }
 
 function GetBankAccount(DB3rd, DBBanks, DBAccType, accountName)

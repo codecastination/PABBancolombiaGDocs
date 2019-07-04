@@ -1,7 +1,6 @@
 # PABBancolombiaGDocs
-(http://codecrastination.com/google-spreadsheet-bancolombia-pab-files/)
 
-### Nomina generadora de archivos PAB para pagos de Bancolombia en Google Sheets
+### Generador de archivos PAB para pagos de Bancolombia en Google Sheets
 
 Adquirir software administrativo de nomina, contabilidad, recursos humanos para empresas pequenas de software puede llegar a ser costoso. Este fue uno de los retos que encontramos para una compania de ~25 personas mas pagos de facturas y obligaciones ya que hacer estos pagos de manera manual en la actual sucursal virtual empresarial de bancolombia es demasiado suceptible a errores sin mencionar que es poco amigable la interfaz.
 
@@ -18,7 +17,7 @@ CreatePaymentFile()
 Dudas?
 #### oscar@gso.com.co
 
-### Generate Payroll PAB Files for Bancolombia from a Google Sheets Database.
+### Generate PAB Files for Bancolombia from a Google Sheets Database.
 
 Getting admin software like payroll, accounting, HR for small startups sometimes can be expensive and not the main focus of a software development company. This is a challenge we faced with a payroll of ~25 persons + transfers to vendors and other obligations. Making these payments online manually can be time-consuming and prone to errors.
 

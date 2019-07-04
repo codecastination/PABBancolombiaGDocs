@@ -16,7 +16,7 @@ Plantilla Google Spreadsheet : https://docs.google.com/spreadsheets/d/1dby-5iSbL
 CreatePaymentFile()
 ```
 Dudas?
-## oscar@gso.com.co
+#### oscar@gso.com.co
 
 ### Generate Payroll PAB Files for Bancolombia from a Google Sheets Database.
 
@@ -33,4 +33,4 @@ Google Spreadsheet template: https://docs.google.com/spreadsheets/d/1dby-5iSbLo2
 CreatePaymentFile()
 ```
 Queries?
-## oscar@gso.com.co
+#### oscar@gso.com.co

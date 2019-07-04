@@ -14,6 +14,8 @@ Plantilla Google Spreadsheet : https://docs.google.com/spreadsheets/d/1dby-5iSbL
 ```javascript
 CreatePaymentFile()
 ```
+##### Nota: La base de datos de Bancos cambia constantemente, para actualizar descargar de aca: https://www.satbancolombia.com/conversores/#!/bancos
+
 Dudas?
 #### oscar@gso.com.co
 
